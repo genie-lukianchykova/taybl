@@ -2,13 +2,16 @@
 
 import { Button, Flex, Select, Card, Text, Badge } from '@radix-ui/themes';
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { MENU_ITEMS, getMenuByCategory } from '../../menuData';
-import { IOrderItem, OrderStatus } from '../../interfaces';
+import { IOrderItem, IOrder, OrderStatus } from '../../interfaces';
+import { ordersStore } from '../../ordersStore';
+import { useRouter } from 'next/navigation';
 
 const NewOrderPage = () => {
   const [selectedItems, setSelectedItems] = useState<IOrderItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<'drinks' | 'food' | 'desserts'>('drinks');
+  const [selectedTable, setSelectedTable] = useState<number>(1);
+  const router = useRouter();
 
   const addItem = (menuItemId: number) => {
     const existingItem = selectedItems.find(item => item.menuItemId === menuItemId);
@@ -52,8 +55,25 @@ const NewOrderPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Submit order logic
-    console.log('Order submitted:', { selectedItems, totalPrice: getTotalPrice() });
+    
+    const newOrder: IOrder = {
+      id: Date.now(),
+      table: selectedTable,
+      totalPrice: getTotalPrice(),
+      status: OrderStatus.PREPARING,
+      items: selectedItems,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    ordersStore.addOrder(newOrder);
+    console.log('Order submitted:', newOrder);
+    router.push('/orders');
+  };
+
+  const handleTableChange = (value: string) => {
+    const tableNumber = parseInt(value);
+    setSelectedTable(tableNumber);
   };
 
   const categories = ['drinks', 'food', 'desserts'] as const;
@@ -68,7 +88,7 @@ const NewOrderPage = () => {
         <Card>
           <Flex gap="5">
             <Text weight="bold">Table Selection</Text>
-            <Select.Root>
+            <Select.Root value={selectedTable.toString()} onValueChange={handleTableChange}>
               <Select.Trigger placeholder="Pick a table" />
               <Select.Content>
                 <Select.Group>
@@ -93,6 +113,7 @@ const NewOrderPage = () => {
               {categories.map(category => (
                 <Button
                   key={category}
+                  type="button"
                   variant={selectedCategory === category ? "solid" : "outline"}
                   onClick={() => setSelectedCategory(category)}
                 >
@@ -109,7 +130,7 @@ const NewOrderPage = () => {
                     <Text weight="bold">{item.name}</Text>
                     <Text color="gray" className="p-3">${item.price.toFixed(2)}</Text>
                   </div>
-                  <Button onClick={() => addItem(item.id)}>
+                  <Button type="button" onClick={() => addItem(item.id)}>
                     Add
                   </Button>
                 </div>
@@ -135,6 +156,7 @@ const NewOrderPage = () => {
                     </div>
                     <Flex align="center" gap="2">
                       <Button 
+                        type="button"
                         size="1" 
                         onClick={() => updateQuantity(item.menuItemId, item.quantity - 1)}
                       >
@@ -142,12 +164,14 @@ const NewOrderPage = () => {
                       </Button>
                       <Text>{item.quantity}</Text>
                       <Button 
+                        type="button"
                         size="1" 
                         onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)}
                       >
                         +
                       </Button>
                       <Button 
+                        type="button"
                         size="1" 
                         variant="outline" 
                         color="red"

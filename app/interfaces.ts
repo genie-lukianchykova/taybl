@@ -19,6 +19,7 @@ export interface IOrderItem {
 
 export interface IOrder {
   id: number;
+  table: number;
   totalPrice: number;
   status: OrderStatus;
   items: IOrderItem[];
