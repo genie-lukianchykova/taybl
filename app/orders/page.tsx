@@ -64,7 +64,6 @@ const OrdersPage = () => {
             <Table.ColumnHeaderCell>Total Price</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Created At</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Updated At</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>

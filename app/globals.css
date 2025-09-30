@@ -12,4 +12,5 @@
 
 body {
   color: rgb(var(--foreground-rgb));
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
