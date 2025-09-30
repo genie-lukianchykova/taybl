@@ -11,13 +11,11 @@ export const ordersStore = {
     orders.push(order);
   },
 
-  updateOrder: (id: number, updates: Partial<IOrder>): boolean => {
+  updateOrder: (id: number, updates: Partial<IOrder>): void => {
     const index = orders.findIndex(order => order.id === id);
     if (index !== -1) {
-      orders[index] = { ...orders[index], ...updates, updatedAt: new Date() };
-      return true;
+      orders[index] = { ...orders[index], ...updates };
     }
-    return false;
   },
 
   removeOrder: (id: number): boolean => {

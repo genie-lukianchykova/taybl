@@ -24,5 +24,4 @@ export interface IOrder {
   status: OrderStatus;
   items: IOrderItem[];
   createdAt: Date;
-  updatedAt: Date;
 }

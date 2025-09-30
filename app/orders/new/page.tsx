@@ -63,7 +63,6 @@ const NewOrderPage = () => {
       status: OrderStatus.PREPARING,
       items: selectedItems,
       createdAt: new Date(),
-      updatedAt: new Date()
     };
     
     ordersStore.addOrder(newOrder);
@@ -84,7 +83,7 @@ const NewOrderPage = () => {
       <h1 className="text-2xl font-bold">New Order</h1>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Table Selection */}
+        {/* Tables */}
         <Card>
           <Flex gap="5">
             <Text weight="bold">Table Selection</Text>
@@ -103,12 +102,12 @@ const NewOrderPage = () => {
           </Flex>
         </Card>
 
-        {/* Menu Selection */}
+        {/* Menu */}
         <Card>
           <Flex direction="column" gap="4">
             <Text weight="bold">Select Items</Text>
             
-            {/* Category Tabs */}
+            {/* Categories*/}
             <Flex gap="2">
               {categories.map(category => (
                 <Button
@@ -122,7 +121,7 @@ const NewOrderPage = () => {
               ))}
             </Flex>
 
-            {/* Menu Items */}
+            {/* Items */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 xl:grid-cols-3">
               {menuByCategory.map(item => (
                 <div key={item.id} className="flex justify-between items-center p-3 border border-zinc-300 rounded">
@@ -139,7 +138,7 @@ const NewOrderPage = () => {
           </Flex>
         </Card>
 
-        {/* Selected Items */}
+        {/* Total Price */}
         {selectedItems.length > 0 && (
           <Card>
             <Flex direction="column" gap="3">
