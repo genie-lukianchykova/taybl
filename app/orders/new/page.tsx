@@ -1,21 +1,21 @@
 'use client';
 
-import { Button, Flex, Select, Card, Text, Badge } from '@radix-ui/themes';
 import React, { useState } from 'react';
-import { MENU_ITEMS, getMenuByCategory } from '../../menuData';
+import { Button, Flex, Select, Card, Text, Badge } from '@radix-ui/themes';
+import { useRouter } from 'next/navigation';
+import { getMenuByCategory, getMenuItemById } from '../../menuData';
 import { IOrderItem, IOrder, OrderStatus } from '../../interfaces';
 import { ordersStore } from '../../ordersStore';
-import { useRouter } from 'next/navigation';
 
 const NewOrderPage = () => {
   const [selectedItems, setSelectedItems] = useState<IOrderItem[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<'drinks' | 'food' | 'desserts'>('drinks');
-  const [selectedTable, setSelectedTable] = useState<number>(1);
+  const [category, setCategory] = useState<'drinks' | 'food' | 'desserts'>('drinks');
+  const [table, setTable] = useState<number>(1);
   const router = useRouter();
 
-  const addItem = (menuItemId: number) => {
-    const existingItem = selectedItems.find(item => item.menuItemId === menuItemId);
-    if (existingItem) {
+  const add = (menuItemId: number) => {
+    const exist = selectedItems.find(item => item.menuItemId === menuItemId);
+    if (exist) {
       setSelectedItems(items => 
         items.map(item => 
           item.menuItemId === menuItemId 
@@ -28,13 +28,13 @@ const NewOrderPage = () => {
     }
   };
 
-  const removeItem = (menuItemId: number) => {
+  const remove = (menuItemId: number) => {
     setSelectedItems(items => items.filter(item => item.menuItemId !== menuItemId));
   };
 
-  const updateQuantity = (menuItemId: number, quantity: number) => {
+  const changeNumber = (menuItemId: number, quantity: number) => {
     if (quantity <= 0) {
-      removeItem(menuItemId);
+      remove(menuItemId);
       return;
     }
     setSelectedItems(items => 
@@ -46,9 +46,9 @@ const NewOrderPage = () => {
     );
   };
 
-  const getTotalPrice = () => {
+  const totalPrice = () => {
     return selectedItems.reduce((total, item) => {
-      const menuItem = MENU_ITEMS.find(m => m.id === item.menuItemId);
+      const menuItem = getMenuItemById(item.menuItemId);
       return total + (menuItem?.price || 0) * item.quantity;
     }, 0);
   };
@@ -58,8 +58,8 @@ const NewOrderPage = () => {
     
     const newOrder: IOrder = {
       id: Date.now(),
-      table: selectedTable,
-      totalPrice: getTotalPrice(),
+      table: table,
+      totalPrice: totalPrice(),
       status: OrderStatus.PREPARING,
       items: selectedItems,
       createdAt: new Date(),
@@ -72,11 +72,11 @@ const NewOrderPage = () => {
 
   const handleTableChange = (value: string) => {
     const tableNumber = parseInt(value);
-    setSelectedTable(tableNumber);
+    setTable(tableNumber);
   };
 
   const categories = ['drinks', 'food', 'desserts'] as const;
-  const menuByCategory = getMenuByCategory(selectedCategory);
+  const menuByCategory = getMenuByCategory(category);
 
   return (
     <div className="max-w-4xl m-auto space-y-6">
@@ -87,7 +87,7 @@ const NewOrderPage = () => {
         <Card>
           <Flex gap="5">
             <Text weight="bold">Table Selection</Text>
-            <Select.Root value={selectedTable.toString()} onValueChange={handleTableChange}>
+            <Select.Root value={table.toString()} onValueChange={handleTableChange}>
               <Select.Trigger placeholder="Pick a table" />
               <Select.Content>
                 <Select.Group>
@@ -113,8 +113,8 @@ const NewOrderPage = () => {
                 <Button
                   key={category}
                   type="button"
-                  variant={selectedCategory === category ? "solid" : "outline"}
-                  onClick={() => setSelectedCategory(category)}
+                  variant={category === category ? "solid" : "outline"}
+                  onClick={() => setCategory(category)}
                 >
                   {category.charAt(0).toUpperCase() + category.slice(1)}
                 </Button>
@@ -129,7 +129,7 @@ const NewOrderPage = () => {
                     <Text weight="bold">{item.name}</Text>
                     <Text color="gray" className="p-3">${item.price.toFixed(2)}</Text>
                   </div>
-                  <Button type="button" onClick={() => addItem(item.id)}>
+                  <Button type="button" onClick={() => add(item.id)}>
                     Add
                   </Button>
                 </div>
@@ -139,12 +139,11 @@ const NewOrderPage = () => {
         </Card>
 
         {/* Total Price */}
-        {selectedItems.length > 0 && (
           <Card>
             <Flex direction="column" gap="3">
               <Text weight="bold">Order Summary</Text>
               {selectedItems.map(item => {
-                const menuItem = MENU_ITEMS.find(m => m.id === item.menuItemId);
+                const menuItem = getMenuItemById(item.menuItemId);
                 if (!menuItem) return null;
                 
                 return (
@@ -157,7 +156,7 @@ const NewOrderPage = () => {
                       <Button 
                         type="button"
                         size="1" 
-                        onClick={() => updateQuantity(item.menuItemId, item.quantity - 1)}
+                        onClick={() => changeNumber(item.menuItemId, item.quantity - 1)}
                       >
                         -
                       </Button>
@@ -165,7 +164,7 @@ const NewOrderPage = () => {
                       <Button 
                         type="button"
                         size="1" 
-                        onClick={() => updateQuantity(item.menuItemId, item.quantity + 1)}
+                        onClick={() => changeNumber(item.menuItemId, item.quantity + 1)}
                       >
                         +
                       </Button>
@@ -174,7 +173,7 @@ const NewOrderPage = () => {
                         size="1" 
                         variant="outline" 
                         color="red"
-                        onClick={() => removeItem(item.menuItemId)}
+                        onClick={() => remove(item.menuItemId)}
                       >
                         Remove
                       </Button>
@@ -184,12 +183,11 @@ const NewOrderPage = () => {
               })}
               <div className="border-t pt-3">
                 <Text size="4" weight="bold">
-                  Total: ${getTotalPrice().toFixed(2)}
+                  Total: ${totalPrice().toFixed(2)}
                 </Text>
               </div>
             </Flex>
           </Card>
-        )}
 
         {/* Submit Button */}
         <Button type="submit" size="3" disabled={selectedItems.length === 0}>

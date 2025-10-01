@@ -14,7 +14,6 @@ export interface IMenuItem {
 export interface IOrderItem {
   menuItemId: number;
   quantity: number;
-  priceAtOrder?: number;
 }
 
 export interface IOrder {
