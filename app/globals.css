@@ -10,7 +10,21 @@
   }
 }
 
+* {
+  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Override Radix UI default fonts */
+[data-radix-ui-theme] {
+  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* Ensure all text elements use consistent font */
+h1, h2, h3, h4, h5, h6, p, span, div, button {
+  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif !important;
 }

@@ -2,13 +2,13 @@ import './globals.css'
 import "@radix-ui/themes/styles.css";
 import './theme-config.css';
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Raleway } from 'next/font/google'
 import { Theme, ThemePanel } from '@radix-ui/themes'
 import NavBar from './NavBar'
 
-const inter = Inter({ 
+const raleway = Raleway({ 
   subsets: ['latin'],
-  variable: '--font-inter'
+  variable: '--font-raleway'
 })
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.variable}>
+      <body className={raleway.variable}>
         <Theme accentColor="violet" grayColor="mauve" >
           <NavBar />
           <main className="p-5">{children}</main>

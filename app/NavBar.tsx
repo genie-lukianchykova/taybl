@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import React from 'react'
 import { MdCoffeeMaker } from "react-icons/md";
 import classnames from 'classnames';
-import { Metadata } from 'next';
 
 const NavBar = () => {
     const currentPath = usePathname();
